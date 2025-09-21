@@ -8,8 +8,9 @@ from PyQt6.QtGui import QFont, QColor
 from PyQt6.QtCore import Qt
 
 # Reutilizamos la lógica de los archivos existentes
-from validacion import validacion
 from suma import validarSuma, sumarMatriz, crearMatrizOperacionesStr
+# Importamos la nueva lógica de multiplicación
+from multiplicacion import multiplicarMatrices, crearPasosMultiplicacion, validarMultiplicacion
 
 class CalculadoraMatricesApp(QMainWindow):
     def __init__(self):
@@ -136,7 +137,7 @@ class CalculadoraMatricesApp(QMainWindow):
 
         # Conectar señales
         btn_sumar.clicked.connect(self.realizar_suma)
-        btn_multiplicar.clicked.connect(self.proximamente)
+        btn_multiplicar.clicked.connect(self.realizar_multiplicacion) # Actualizado
         btn_limpiar.clicked.connect(self.limpiar_todo)
 
     def crear_pizarra_resultados(self):
@@ -206,6 +207,35 @@ class CalculadoraMatricesApp(QMainWindow):
         resultado = sumarMatriz(matriz_a, matriz_b)
         self.pizarra.append(self.formatear_matriz_html(resultado, "Resultado final de la operación"))
 
+    def realizar_multiplicacion(self):
+        matriz_a = self.leer_matriz_desde_tabla(self.tabla_matriz_a)
+        matriz_b = self.leer_matriz_desde_tabla(self.tabla_matriz_b)
+
+        if matriz_a is None or matriz_b is None:
+            return
+
+        # Usamos la función de validación existente
+        if not validarMultiplicacion(matriz_a, matriz_b):
+            self.mostrar_error("Error de Dimensiones", 
+                               "El número de columnas de la Matriz A debe ser igual al número de filas de la Matriz B.")
+            return
+        
+        self.pizarra.clear()
+
+        # Mostrar matrices originales
+        self.pizarra.append(self.formatear_matriz_html(matriz_a, "Matriz A"))
+        self.pizarra.append(self.formatear_matriz_html(matriz_b, "Matriz B"))
+
+        # Mostrar pasos del cálculo
+        pasos = crearPasosMultiplicacion(matriz_a, matriz_b)
+        html_pasos = "<h3>Pasos del Cálculo:</h3>"
+        html_pasos += "<br>".join(pasos) # Unimos cada paso con un salto de línea
+        self.pizarra.append(html_pasos)
+
+        # Mostrar resultado final
+        resultado = multiplicarMatrices(matriz_a, matriz_b)
+        self.pizarra.append(self.formatear_matriz_html(resultado, "Resultado Final"))
+
     def limpiar_todo(self):
         for i in range(self.tabla_matriz_a.rowCount()):
             for j in range(self.tabla_matriz_a.columnCount()):
@@ -218,7 +248,8 @@ class CalculadoraMatricesApp(QMainWindow):
         self.pizarra.clear()
 
     def proximamente(self):
-        QMessageBox.information(self, "Próximamente", "La funcionalidad de multiplicación de matrices se implementará pronto.")
+        # Esta función ya no es necesaria para la multiplicación
+        QMessageBox.information(self, "Próximamente", "Esta funcionalidad se implementará pronto.")
 
     def mostrar_error(self, titulo, mensaje):
         QMessageBox.critical(self, titulo, mensaje)
