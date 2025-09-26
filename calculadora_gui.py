@@ -7,9 +7,9 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QFont, QColor
 from PyQt6.QtCore import Qt
 
-# Reutilizamos la lógica de los archivos existentes
+
 from suma import validarSuma, sumarMatriz, crearMatrizOperacionesStr
-# Importamos la nueva lógica de multiplicación
+
 from multiplicacion import multiplicarMatrices, crearPasosMultiplicacion, validarMultiplicacion
 
 class CalculadoraMatricesApp(QMainWindow):
@@ -18,7 +18,6 @@ class CalculadoraMatricesApp(QMainWindow):
         self.setWindowTitle("Calculadora de Matrices")
         self.setGeometry(100, 100, 800, 700)
 
-        # Widget principal y layout
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.layout_principal = QVBoxLayout(self.central_widget)
@@ -28,10 +27,10 @@ class CalculadoraMatricesApp(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        # 1. Banner
+      
         self.crear_banner()
 
-        # 2. Sección de entrada de matrices
+    
         layout_matrices = QHBoxLayout()
         self.grupo_matriz_a = self.crear_grupo_matriz("Primera Matriz", "A")
         self.grupo_matriz_b = self.crear_grupo_matriz("Segunda Matriz", "B")
@@ -39,10 +38,10 @@ class CalculadoraMatricesApp(QMainWindow):
         layout_matrices.addWidget(self.grupo_matriz_b)
         self.layout_principal.addLayout(layout_matrices)
 
-        # 3. Botones de operación
+       
         self.crear_botones_operacion()
 
-        # 4. Pizarra de resultados
+      
         self.crear_pizarra_resultados()
 
     def crear_banner(self):
@@ -56,7 +55,7 @@ class CalculadoraMatricesApp(QMainWindow):
         grupo = QGroupBox(titulo)
         layout_grupo = QVBoxLayout(grupo)
 
-        # Controles para dimensiones
+   
         layout_dimensiones = QHBoxLayout()
         layout_dimensiones.addWidget(QLabel("Filas:"))
         spin_filas = QSpinBox()
@@ -76,18 +75,17 @@ class CalculadoraMatricesApp(QMainWindow):
         
         layout_grupo.addLayout(layout_dimensiones)
 
-        # Tabla para la matriz
+     
         tabla = QTableWidget(2, 2)
         tabla.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         tabla.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         layout_grupo.addWidget(tabla)
 
-        # Conectar señal del botón
+       
         btn_crear.clicked.connect(lambda: self.actualizar_tabla_matriz(
             spin_filas.value(), spin_columnas.value(), tabla
         ))
 
-        # Guardar referencias
         if id_matriz == 'A':
             self.spin_filas_a = spin_filas
             self.spin_columnas_a = spin_columnas
@@ -135,7 +133,7 @@ class CalculadoraMatricesApp(QMainWindow):
 
         self.layout_principal.addLayout(layout_botones)
 
-        # Conectar señales
+      
         btn_sumar.clicked.connect(self.realizar_suma)
         btn_multiplicar.clicked.connect(self.realizar_multiplicacion) # Actualizado
         btn_limpiar.clicked.connect(self.limpiar_todo)
@@ -168,7 +166,6 @@ class CalculadoraMatricesApp(QMainWindow):
                         self.mostrar_error("Valor no numérico", f"El valor en la celda [{i+1}, {j+1}] no es un número válido.")
                         return None
                 else:
-                    # Asumir 0 si la celda está vacía
                     fila.append(0.0)
             matriz.append(fila)
         return matriz
@@ -214,7 +211,7 @@ class CalculadoraMatricesApp(QMainWindow):
         if matriz_a is None or matriz_b is None:
             return
 
-        # Usamos la función de validación existente
+      
         if not validarMultiplicacion(matriz_a, matriz_b):
             self.mostrar_error("Error de Dimensiones", 
                                "El número de columnas de la Matriz A debe ser igual al número de filas de la Matriz B.")
@@ -222,17 +219,17 @@ class CalculadoraMatricesApp(QMainWindow):
         
         self.pizarra.clear()
 
-        # Mostrar matrices originales
+ 
         self.pizarra.append(self.formatear_matriz_html(matriz_a, "Matriz A"))
         self.pizarra.append(self.formatear_matriz_html(matriz_b, "Matriz B"))
 
         # Mostrar pasos del cálculo
         pasos = crearPasosMultiplicacion(matriz_a, matriz_b)
         html_pasos = "<h3>Pasos del Cálculo:</h3>"
-        html_pasos += "<br>".join(pasos) # Unimos cada paso con un salto de línea
+        html_pasos += "<br><br>".join(pasos) # Se usa doble <br> para el salto de línea extra
         self.pizarra.append(html_pasos)
 
-        # Mostrar resultado final
+      
         resultado = multiplicarMatrices(matriz_a, matriz_b)
         self.pizarra.append(self.formatear_matriz_html(resultado, "Resultado Final"))
 
@@ -247,21 +244,16 @@ class CalculadoraMatricesApp(QMainWindow):
 
         self.pizarra.clear()
 
-    def proximamente(self):
-        # Esta función ya no es necesaria para la multiplicación
-        QMessageBox.information(self, "Próximamente", "Esta funcionalidad se implementará pronto.")
+    
 
     def mostrar_error(self, titulo, mensaje):
         QMessageBox.critical(self, titulo, mensaje)
 
-# c:\Users\solis\OneDrive\Escritorio\Caculadora matrices\calculadora_gui.py
 
-# ... (código anterior sin cambios)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    # Estilo global para un modo claro y moderno con texto negro
     app.setStyleSheet("""
     QWidget { color: black; }
         QMainWindow, QWidget {
